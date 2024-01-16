@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "skypublicschool",
+    "slug": "skypublicschool",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/SkyLogo512x512.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/skyLogo.png",
+      "resizeMode": "cover"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/SkyLogo512x512.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.skandsolution.skypublicschool"
+    },
+    "web": {
+      "favicon": "./assets/SkyLogo512x512.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cf568e56-43e0-4ec2-86d7-0237a180b0b6"
+      }
+    },
+    "owner": "skandsolution"
+  }
+}
