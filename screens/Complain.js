@@ -65,7 +65,7 @@ export default function Complain({navigation, route}) {
                         flexDirection: 'column', left: "2.3%"}}>
                 <View style={{height: "9%", borderColor: "#D3D0D0", borderRadius: 10,
                         borderWidth: 3, marginTop: 20, width: "100%",}}>
-                    <Text style={{color: "#777952", fontSize: 19, marginTop: -40,
+                    <Text style={{color: "#777952", fontSize: 19, marginTop: -20,
                         backgroundColor: "#FFFFFF", width: "19.5%",
                         marginLeft: 10, borderRadius: 15}}> Subject</Text>
                     <TextInput onChangeText={(textF) => set_ComplainType(textF)}

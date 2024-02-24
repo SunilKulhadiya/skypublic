@@ -84,11 +84,11 @@ export default function ViewDownload({navigation, route}) {
         return(
         <View style={{marginTop: Indx ==0 ? "2.5%" : "01%", flexDirection: 'column',}}>
             <View style={{flexDirection: 'row', width: "100%", 
-                        height: 50,}}>
+                        height: 70,}}>
                 <TouchableOpacity onPress={()=> FileView(Itm.title, Itm.file)}
                     style={{flexDirection: 'row', width: "83%", marginLeft: 10,
-                            height: 50,}}>
-                    <Text style={{color: "#000000", fontSize: 17, width: "85%", height: "100%",
+                            height: "100%",}}>
+                    <Text style={{color: "#000000", fontSize: 17, width: "90%", height: "100%",
                             marginTop: 10}}>
                         {Itm.title}
                     </Text>

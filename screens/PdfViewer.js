@@ -8,6 +8,7 @@ import config from './app_config';
 
 export default function PdfViewer ({navigation, route}) {
 
+  console.log("PdfViewer.js, ------------ route.params.fileuri : ", route.params.fileuri);
   const[isLoading, set_isLoading] = React.useState(true);
   React.useEffect(()=>{
     set_isLoading(true);
@@ -16,6 +17,8 @@ export default function PdfViewer ({navigation, route}) {
     }, 300);
   },[])
 
+  let tl = route.params.title;
+  let tll = tl.length;
   //-------------------------------
     return (
       <SafeAreaView style={{ flex: 1 }}>
@@ -24,7 +27,7 @@ export default function PdfViewer ({navigation, route}) {
             <AntDesign name="arrowleft" size={40} color="#FFFFFF"
                 onPress={()=> navigation.goBack()}
                 style={{width: "14%", height: "100%"}}/>
-              <Text style={{color: "#000000", fontSize: 20, fontWeight: '800',
+              <Text style={{color: "#000000", fontSize: tll < 25 ? 20 : 15, fontWeight: '800',
                 width: "80%", height: "100%", marginTop: 5}}>{route.params.title}</Text>
         </View>
 

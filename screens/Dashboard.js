@@ -24,6 +24,8 @@ const Dashboard = ({ navigation, route }) => {
   const [NAME, set_NAME] = React.useState('');
   const [CLASS, set_CLASS] = React.useState('');
   const [SECTION, set_SECTION] = React.useState('');
+  const [Staff_Id, set_Staff_Id] = React.useState(0);
+  const [Role_Id, set_Role_Id] = React.useState(0);
   const [Role, set_Role] = React.useState('');
   const [IMAGE, set_IMAGE] = React.useState('null');
   const [isBoxVisival, set_UploadBox] = React.useState(false);
@@ -32,11 +34,11 @@ const Dashboard = ({ navigation, route }) => {
   const [SubAction, set_SubAction] = React.useState('');
   const [isRolePermissions, set_RolePermissions] = React.useState([]);
   const [WhatsappVerPos, set_WhatsappVerPos] = React.useState(80);
-  // const [fontsLoaded, fontError] = useFonts({
-  //   AlgerianRegular: require('../assets/fonts/Algerian-Regular.ttf'),
-  //   AlgerianBold : require('../assets/fonts/Algerian_R_A.ttf'),
-  //   SourceSansProItalic: require('../assets/fonts/SourceSansPro-Italic.ttf'),
-  // });
+  const [fontsLoaded, fontError] = useFonts({
+    AlgerianRegular: require('../assets/fonts/Algerian-Regular.ttf'),
+    AlgerianBold : require('../assets/fonts/Algerian_R_A.ttf'),
+    SourceSansProItalic: require('../assets/fonts/SourceSansPro-Italic.ttf'),
+  });
 
   async function AsyncData() {
     if(config.DEVICEHEIGHT <= 708){
@@ -50,6 +52,11 @@ const Dashboard = ({ navigation, route }) => {
     }
     set_BirthWish(false);
     try {
+      AsyncStorage.getItem('STAFF_ID').then((value) => {
+        console.log("------------------Dashboard Staff id : ", value);
+        set_Staff_Id(value);
+      });
+      AsyncStorage.getItem('ROLE_ID').then((value) => set_Role_Id(value));
       AsyncStorage.getItem('ROLE').then((value) => set_Role(value));
       AsyncStorage.getItem('NAME').then((value) => set_NAME(value));
       AsyncStorage.getItem('CLASS').then((value) => set_CLASS(value));
@@ -123,7 +130,8 @@ const Dashboard = ({ navigation, route }) => {
         method: 'GET', headers: {'Accept': 'application/json', 'Content-Type': 'application/json',}
     })
 
-    respons1 = await respons1.json(), Slides=[], Gallry = [], j=0;
+    respons1 = await respons1.json();
+    let Slides=[], Gallry = [], j=0;
     console.log("-----respons1 : ", respons1);
     Slides.push(respons1.data);
     if(Slides.length > 3){
@@ -322,15 +330,15 @@ const Dashboard = ({ navigation, route }) => {
     }
   }
 
-  // const onLayoutRootView = useCallback(async () => {
-  //   if (fontsLoaded) {
-  //     await SplashScreen.hideAsync();
-  //   }
-  // }, [fontsLoaded]);
+  const onLayoutRootView = React.useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
-  // if (!fontsLoaded) {
-  //   return null;
-  // }
+  if (!fontsLoaded) {
+    return null;
+  }
   //---------------------------------
   const toggleModalVisibility = () => {
     set_BirthWish(false);
@@ -481,7 +489,13 @@ const Dashboard = ({ navigation, route }) => {
 
       if(j>=isRolePermissions.length-1){
         console.log("StaffAttendence Authority, isPermision : ", isPermision);
-        navigation.navigate('StaffAttendanceAdm', {PERMISSION_RANGE: isPermision});
+        if(isPermision == 11 || isPermision == 12 || isPermision == 13 || isPermision == 30){
+          navigation.navigate('StaffAttendanceAdm', {PERMISSION_RANGE: isPermision});
+        }else{
+          console.log("StaffAttendence Authority, Staff id : ", Staff_Id);
+          navigation.navigate('StaffAttendanceView', {PERMISSION_RANGE: isPermision,
+                              STAFF_NAME: NAME, STAFF_ID: Staff_Id});
+        }
       }
     }//for
 
@@ -503,14 +517,14 @@ const Dashboard = ({ navigation, route }) => {
     Image.getSize(item.feature_image, (width, height)=>{
       wdth = width - width*0.5;
       hgt = height - height*0.5;
-      console.log("W : ", wdth, ", H : ", hgt);
+      console.log("W : ", wdth, ", H : ", hgt, "----------------------------------", index, str);
     })
 
     return(
       <View style={{marginLeft: 60}}>
         <View style={{justifyContent: "flex-start", flexDirection: "column",
               width: config.DEVICEWIDTH * 0.99, padding: 10}}>
-          <View style={{flexDirection: "row", marginLeft: 15}}>
+          <View style={{flexDirection: "row", marginLeft: 15, width: config.DEVICEWIDTH * 0.95}}>
             <View style={{width: config.DEVICEWIDTH * 0.25, paddingRight: 12}}>
             {
               item.feature_image !== null && item.feature_image.length > 2 ? (
@@ -526,12 +540,12 @@ const Dashboard = ({ navigation, route }) => {
             }
             </View>
             <View style={{flexDirection: "column", paddingLeft: 0,
-                width: config.DEVICEWIDTH * 0.76,
+                width: config.DEVICEWIDTH * 0.73,
                 marginLeft: config.DEVICEWIDTH <= 360 ? 20 : 5}}>
               <Text style={{color: "#000000", fontWeight: "bold",
-                  width: config.DEVICEWIDTH * 0.6, fontSize: 20}}>{item.title}</Text>
+                  width: "100%", fontSize: 20}}>{item.title}</Text>
               <Text style={{color: "#000000", fontWeight: "bold",
-                  width: config.DEVICEWIDTH * 0.76, fontSize: 15}}>{str}</Text>
+                  width: "100%", fontSize: 15}}>{str}</Text>
               <Text style={{color: "#000000", fontWeight: "bold",
                   fontSize: 8}}>Create on : {item.created_at}</Text>
               <View style={{flexDirection: "row"}}>
@@ -541,6 +555,11 @@ const Dashboard = ({ navigation, route }) => {
                     fontSize: 8, marginLeft: 30}}>End on : {item.event_end}</Text>
               </View>
             </View>
+            {
+              index >= 3 ? (
+                <View style={{marginLeft: 20, marginTop: 20}}/>
+              ):(<></>)
+            }
           </View>
         </View>
       </View>
@@ -567,7 +586,7 @@ const Dashboard = ({ navigation, route }) => {
               borderColor: "#FFFFFF", borderWidth: 0, marginRight: 0, marginTop: 3,
               left: "-10%"}} />
             <View style={styles.MCol}>
-              <Text style={styles.SchoolName}>
+              <Text style={[styles.SchoolName, {fontFamily: 'AlgerianRegular'}]}>
                 SkY Public Hr. Sec. School</Text>
               <View style={{width: "100%", height: 2, backgroundColor: "#C90FEB",
                 justifyContent: "center", alignItems: "center", top: "-14.7%"
@@ -622,8 +641,8 @@ const Dashboard = ({ navigation, route }) => {
                   <FlatList contentContainerStyle={{ flexGrow: 1 }}
                     showsVerticalScrollIndicator={false}
                     data={MarqueeData} horizontal
-                    keyExtractor={(item, indexx) => indexx.toString()}
-                    renderItem={({item, indexx}) => MarqueeDisplay(item, indexx)}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({item, index}) => MarqueeDisplay(item, index)}
                   />
                 </MarqueeView>
               </View>

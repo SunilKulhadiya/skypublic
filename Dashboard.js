@@ -481,7 +481,7 @@ const Dashboard = ({ navigation, route }) => {
     return(
       <View style={{marginLeft: 20}}>
         <View style={{justifyContent: "flex-start", flexDirection: "column",
-              width: DEVICEWIDTH * 0.99, padding: 10}}>
+              width: DEVICEWIDTH * 0.99, padding: 0}}>
           <View style={{flexDirection: "row", marginLeft: 15}}>
             <View style={{width: DEVICEWIDTH * 0.21, paddingRight: 12}}>
             {

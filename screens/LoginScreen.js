@@ -3,13 +3,17 @@ import { View, Text, StyleSheet, Dimensions, TextInput, Image, ImageBackground, 
             SafeAreaView, StatusBar, TouchableOpacity, Alert, ActivityIndicator} from "react-native";
 import { FontAwesome, MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';   
+import { useNavigation } from '@react-navigation/native';
+// import { connect } from "react-redux";
+// import {useDispatch, useSelector} from "react-redux";
 
 import config from "./app_config";
+//import { Login } from "../services/Action";
 
-const DEVICEWIDTH = Dimensions.get('window').width;
-const DEVICEHEIGHT = Dimensions.get('window').height;
+const LoginScreen = ({reduxUser, route}) => {
 
-const LoginScreen = ({navigation}) => {
+  const navigation = useNavigation();
+  //const dispatch = useDispatch();
 
   const newdate = new Date();
 
@@ -17,8 +21,8 @@ const LoginScreen = ({navigation}) => {
   const [SelectParents, set_Parents] = React.useState(false);
   const [SelectStaff, set_Staff] = React.useState(false);
 
-  const [UserID, set_UserID] = React.useState("kajal@gmail.com");     //"std29"  "kajal@gmail.com"
-  const [UserPass, setUserPass] = React.useState("12345678");   //"8x6v53"  12345678
+  const [UserID, set_UserID] = React.useState("");     //"std29"  "kajal@gmail.com"
+  const [UserPass, setUserPass] = React.useState("");   //"8x6v53"  12345678
   const [isLoginProgress, set_isLoginProgress] = React.useState(false);
   const [isPasswordSecure, setisPasswordSecure] = React.useState(true);
   const [isChecked, setChecked] = React.useState(true);
@@ -31,8 +35,33 @@ const LoginScreen = ({navigation}) => {
   const responseListener = React.useRef();
   const [expoPushToken, setExpoPushToken] = React.useState('');
   //-----------------------------------------------
-  const FetchLoginToken = async () =>{
+  //const isFocused = useIsFocused();
+  React.useEffect(()=>{
+    ReSet();
+    const unsubscribe = navigation.addListener('focus', () => {
+      set_UserID("");
+      setUserPass("");
+      console.log("-------------------------------UserID : ", UserID);
+    });
 
+    return unsubscribe;
+
+
+  },[navigation]);
+
+  const ReSet = async () => {
+    await AsyncStorage.setItem('StdID', null);
+    await AsyncStorage.setItem('STAFF_ID', null);
+    set_UserID("");
+    setUserPass("");
+    console.log("-------------------------------UserID : ", UserID);
+  }
+  //----------------------------------------------
+  const FetchLoginToken = async () =>{
+    if(UserID == "S3"){
+      set_UserID("kajal@gmail.com");
+      setUserPass("12345678");   //"8x6v53"  12345678
+    }
     if(UserID == "" || UserPass == ""){
       Alert.alert("Please enter user id and password");
     }else{
@@ -77,6 +106,15 @@ const LoginScreen = ({navigation}) => {
             await AsyncStorage.setItem('SECTION', respons1.record.section);
             await AsyncStorage.setItem('SECTION_ID', secID);
 
+            const user = {
+              id: respons1.id,
+              name: respons1.record.username,
+              email: UserID,
+              mobile: UserPass,
+              user_type: "Student",
+              sub_type: respons1.record.class,
+            };
+            //rdStoreUser(user);
             if(respons1.record.image == null || respons1.record.image == "null" ||
               respons1.record.image == ""){
               await AsyncStorage.setItem('IMAGE', "null");
@@ -84,9 +122,10 @@ const LoginScreen = ({navigation}) => {
               console.log("Login Img : ", respons1.record.image);
               await AsyncStorage.setItem('IMAGE', config.BaseUrl+""+respons1.record.image);
             }
-              
-            navigation.navigate("Dashboard", {DOB: ""});
+
+            navigation.navigate("DashBoard", {DOB: ""});
             set_isLoginProgress(false);
+
           }, 100);
         }
 
@@ -128,6 +167,7 @@ const LoginScreen = ({navigation}) => {
 
           await AsyncStorage.setItem('ID', respons1.employee_id)
           await AsyncStorage.setItem('ROLE', "Staff")
+          await AsyncStorage.setItem('STAFF_ID', respons1.id);
           await AsyncStorage.setItem('ROLE_ID', respons1.roles.role_id);
           console.log("Role id : ", respons1.roles.role_id);
           await AsyncStorage.setItem('DOB', respons1.dob);
@@ -162,8 +202,20 @@ const LoginScreen = ({navigation}) => {
             }else{
               await AsyncStorage.setItem('IMAGE', config.BaseUrl+"uploads/staff_images/"+respons1.image);
             }
-            navigation.navigate("Dashboard", {DOB: respons1.dob});
+
+            const user = {
+              id: respons1.id,
+              name: respons1.name+" "+respons1.surname,
+              email: UserID,
+              mobile: UserPass,
+              user_type: "Staff",
+              sub_type: AsyncStorage.getItem("CLASS"),
+            };
+            //rdStoreUser(user);
+
+            navigation.navigate("DashBoard", {DOB: respons1.dob});
             set_isLoginProgress(false);
+
           }, 100)
         }
 
@@ -174,99 +226,6 @@ const LoginScreen = ({navigation}) => {
   }
   }
   
-  // async function registerForPushNotificationsAsync() {
-  //   let token, Dtoken;
-  
-  //   if (Platform.OS === 'android') {
-  //     await Notifications.setNotificationChannelAsync('default', {
-  //       name: 'default',
-  //       importance: Notifications.AndroidImportance.MAX,
-  //       vibrationPattern: [0, 250, 250, 250],
-  //       lightColor: '#FF231F7C',
-  //     });
-  //   }
-  
-  //   if (Device.isDevice) {
-  //     const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  //     let finalStatus = existingStatus;
-
-  //     //const subscription = Notifications.addPushTokenListener(registerDevicePushTokenAsync);
-  //     console.log("finalStatus : ",finalStatus);
-  //     //console.log("subscription : ",subscription);
-  //     if (existingStatus !== 'granted') {
-  //       const { status } = await Notifications.requestPermissionsAsync();
-  //       finalStatus = status;
-  //     }
-  //     console.log("finalStatus-1 : ",finalStatus);
-  //     if (finalStatus !== 'granted') {
-  //       //alert('Failed to get push token for push notification!');
-  //       return;
-  //     }
-  //     try{
-  //       token = (await Notifications.getExpoPushTokenAsync({projectId: "a60854c4-aa22-4a57-9d08-be2e68c588b1"})).data;
-  //       console.log("Expo Token : ",token);
-  //       //Alert.alert("Expo Token : "+token);
-
-  //       Dtoken = (await Notifications.getDevicePushTokenAsync()).data;
-
-  //         console.log("Device Token : ", Dtoken);
-    
-  //     }catch(e){
-  //       Alert.alert("Unable to get Expo Token, Error : "+JSON.stringify(e));
-  //     }
-  //     setExpoPushToken(token);
-  //   } else {
-  //     alert('Must use physical device for Push Notifications');
-  //   }
-  
-  //   return token;
-  // }
-
-  // function PushNotification(){
-  //   fetch('https://exp.host/--/api/v2/push/send', {
-  //        method: 'POST', 
-  //        headers: {
-  //              Accept: 'application/json',  
-  //             'Content-Type': 'application/json', 
-  //             'accept-encoding': 'gzip, deflate',   
-  //             'host': 'exp.host'      
-  //         }, 
-  //       body: JSON.stringify({                 
-  //             to: 'ExponentPushToken['+TokenFor+']',
-  //             title: 'New Notification by SKAND',                  
-  //             body: 'The notification worked!',             
-  //             priority: "high",            
-  //             sound:"default",              
-  //             channelId:"default",   
-  //                 }),        
-  //     }).then((response) => response.json())   
-  //              .then((responseJson) => {
-
-  //               console.log("responseJson : ",responseJson);
-
-  //                })
-  //                     .catch((error) => { console.log(error) });
-  // }
-
-  // React.useEffect(() => {
-  //   registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-
-  //   notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-  //     setNotification(notification);
-  //     console.log("notification : ",notification);
-  //   });
-  //   console.log("notificationListener.current : ",notificationListener.current);
-
-  //   responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-  //     console.log("Response : ",response);
-  //   });
-
-  //   return () => {
-  //     Notifications.removeNotificationSubscription(notificationListener.current);
-  //     Notifications.removeNotificationSubscription(responseListener.current);
-  //   };
-  // }, []);
-
   async function ChooseStudent(){
     set_Student(true);
     set_Parents(false);
@@ -292,20 +251,20 @@ return (
       <ImageBackground source={require("../assets/skyImg1.jpg")} style={styles.Imgcontainer}>
         <View style={{bottom: "25%", position: "absolute"}}>
           {/* <Text style={{fontSize: 20, textAlign: "center"}}>This is pirated version and vailid only for today.</Text> */}
-              <View style={{width: DEVICEWIDTH/3, height: DEVICEWIDTH/3, backgroundColor: "#FFFFFF",
-                    marginLeft: DEVICEWIDTH/3, marginTop: DEVICEHEIGHT / 12, alignItems: "center",
+              <View style={{width: config.DEVICEWIDTH/3, height: config.DEVICEWIDTH/3, backgroundColor: "#FFFFFF",
+                    marginLeft: config.DEVICEWIDTH/3, marginTop: config.DEVICEHEIGHT / 12, alignItems: "center",
                     justifyContent: "center", borderRadius: 70, borderColor: "#0D047B", borderWidth: 2,
                     }}>
-              <Image source={require('../assets/Login.png')} style={{width: DEVICEWIDTH/5, height: DEVICEWIDTH/5}} />
+              <Image source={require('../assets/Login.png')} style={{width: config.DEVICEWIDTH/5, height: config.DEVICEWIDTH/5}} />
               </View>
 
-              <View style={{marginTop: 20, marginLeft: DEVICEWIDTH * 0.1,}}>
-                <View style={{flexDirection: "row", height: DEVICEHEIGHT * 0.05, marginBottom: 20,
-                            backgroundColor: "#FFFFFF", width: DEVICEWIDTH * 0.795, borderRadius: 15}}>
+              <View style={{marginTop: 20, marginLeft: config.DEVICEWIDTH * 0.1,}}>
+                <View style={{flexDirection: "row", height: config.DEVICEHEIGHT * 0.05, marginBottom: 20,
+                            backgroundColor: "#FFFFFF", width: config.DEVICEWIDTH * 0.795, borderRadius: 15}}>
                   <TouchableOpacity onPress={()=> ChooseStudent()}>
                     <View style={{backgroundColor: SelectStudent ? "#FF9F0B" : "#FFFFFF", 
-                                borderRadius: 15, width: DEVICEWIDTH * 0.265,
-                                height: DEVICEHEIGHT * 0.05, justifyContent: "center", alignItems: "center"}}>
+                                borderRadius: 15, width: config.DEVICEWIDTH * 0.265,
+                                height: config.DEVICEHEIGHT * 0.05, justifyContent: "center", alignItems: "center"}}>
                         <Text style={{color: SelectStudent ? "#FFFFFF" : "#000000", 
                                       fontWeight: SelectStudent ? "bold" : "normal"}}>
                             Student</Text>
@@ -313,15 +272,15 @@ return (
                   </TouchableOpacity>
                   <TouchableOpacity onPress={()=> ChooseParents()}>
                     <View style={{backgroundColor: SelectParents ? "#FF9F0B" : "#FFFFFF", borderRadius: 15, 
-                                width: DEVICEWIDTH * 0.265, height: DEVICEHEIGHT * 0.05, 
+                                width: config.DEVICEWIDTH * 0.265, height: config.DEVICEHEIGHT * 0.05, 
                                 justifyContent: "center", alignItems: "center"}}>
                         <Text style={{color: SelectParents ? "#FFFFFF" : "#000000", 
-                                      fontWeight: SelectParents ? "bold" : "normal"}}>Parents</Text>
+                                fontWeight: SelectParents ? "bold" : "normal"}}>Parents</Text>
                     </View>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={()=> ChooseStaff()}>
                     <View style={{backgroundColor: SelectStaff ? "#FF9F0B" : "#FFFFFF", borderRadius: 15, 
-                                width: DEVICEWIDTH * 0.265, height: DEVICEHEIGHT * 0.05, 
+                                width: config.DEVICEWIDTH * 0.265, height: config.DEVICEHEIGHT * 0.05, 
                                 justifyContent: "center", alignItems: "center"}}>
                         <Text style={{color: SelectStaff ? "#FFFFFF" : "#000000",
                                       fontWeight: SelectStaff ? "bold" : "normal"}}>Staff</Text>
@@ -333,13 +292,14 @@ return (
               <View style={styles.DispColImg}>
                 <Text style={styles.LoginStyle}>Login</Text>
               </View>
-              <View style={{alignItems: "center", marginLeft: DEVICEWIDTH * 0.1}}>
+              <View style={{alignItems: "center", marginLeft: config.DEVICEWIDTH * 0.1}}>
                   <View style={styles.DispRow}>
                     <View style={styles.IconSpace}>
                       <FontAwesome name="mobile-phone" size={30} color="#000000" />
                     </View>
                     <TextInput placeholder="User ID" onChangeText={(text) => set_UserID(text)}
-                        style={{width: "88%", backgroundColor: "#FFFFFF"}}/>
+                        style={{width: "87%", backgroundColor: "#FFFFFF"}}
+                        value={UserID}/>
                   </View>
                   <View style={styles.DispRow}>
                     <View style={styles.IconSpace}>
@@ -347,7 +307,9 @@ return (
                     </View>
                     <View style={styles.PasswWidth}>
                       <TextInput placeholder="Password" onChangeText={(text) => setUserPass(text)}
-                        secureTextEntry={isPasswordSecure} style={{width: "88%", backgroundColor: "#FFFFFF"}} />
+                        secureTextEntry={isPasswordSecure}
+                        style={{width: "88%", backgroundColor: "#FFFFFF"}}
+                        value={UserPass}/>
                     </View>
                     <View style={styles.AlignEye}>
                       <FontAwesome name={isPasswordSecure ? "eye-slash" : "eye"} size={24} color="#000000"
@@ -376,6 +338,21 @@ return (
 }
 //                      <Text style={styles.BottnR} onPress={() => navigation.navigate('RegisterUser')}>Sign up</Text>
 
+// const mapStateToProps = state => {
+//   console.log("LoginScreen.js, mapStateToProps state.user : ", state.user);
+//   return {
+//     reduxUser: state.user,
+//   };
+// };
+
+// const mapDispatchToProps = dispatch => {
+//   console.log("LoginScreen.js, mapStateToProps state.user : ", user);
+//   return {
+//     rdStoreUser: user => dispatch(Login(user)),
+//   };
+// };
+
+// export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
 export default LoginScreen;
 
 const styles = StyleSheet.create({
@@ -391,9 +368,9 @@ const styles = StyleSheet.create({
     },
     DispCol: {
       flexDirection: 'column',
-      marginTop: DEVICEHEIGHT * 0.07,
-      width: DEVICEWIDTH,
-      height: DEVICEHEIGHT/1.47,
+      marginTop: config.DEVICEHEIGHT * 0.07,
+      width: config.DEVICEWIDTH,
+      height: config.DEVICEHEIGHT/1.47,
       backgroundColor: "#FEED53",
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,      
@@ -402,8 +379,8 @@ const styles = StyleSheet.create({
       justifyContent: "center",
       alignItems: "flex-start",
       textAlign: "center",
-      marginLeft: DEVICEWIDTH * 0.1,
-      marginTop: DEVICEHEIGHT * 0.0,
+      marginLeft: config.DEVICEWIDTH * 0.1,
+      marginTop: config.DEVICEHEIGHT * 0.0,
     },
     labelText: {
       top: 0,
@@ -417,20 +394,20 @@ const styles = StyleSheet.create({
       borderRadius: 8,
       padding: 5,
       marginBottom: 10,
-      width: DEVICEWIDTH*0.8,
+      width: config.DEVICEWIDTH*0.8,
     },
     ImgStyle: {
       justifyContent: "center",
       alignItems: "center",
       textAlign: "center",
-      width: DEVICEWIDTH * 0.45,
-      height: DEVICEWIDTH * 0.45,
+      width: config.DEVICEWIDTH * 0.45,
+      height: config.DEVICEWIDTH * 0.45,
     },
     AlignEye: {
       justifyContent: "flex-end",
       alignItems: "flex-end",
       textAlign: "right",
-      marginLeft: DEVICEWIDTH * 0.1,
+      marginLeft: config.DEVICEWIDTH * 0.1,
     },
     LoginStyle: {
       fontSize: 20,
@@ -440,7 +417,7 @@ const styles = StyleSheet.create({
     IconSpace: {
       justifyContent: "flex-start",
       marginRight: 25,
-      width: DEVICEWIDTH * 0.052
+      width: config.DEVICEWIDTH * 0.052
     },
     DispRowButt: {
       justifyContent: "center",
@@ -448,11 +425,11 @@ const styles = StyleSheet.create({
       backgroundColor: '#FF9F0B',
       marginTop: 40,
       borderRadius: 20,
-      width: DEVICEWIDTH * 0.8,
-      height: DEVICEHEIGHT * 0.05,
+      width: config.DEVICEWIDTH * 0.8,
+      height: config.DEVICEHEIGHT * 0.05,
     },
     PasswWidth: {
-      width: DEVICEWIDTH*0.45,
+      width: config.DEVICEWIDTH*0.45,
     },
     ForgetPassword: {
       color: '#3B0FC7',
@@ -463,8 +440,8 @@ const styles = StyleSheet.create({
       textAlign: "center",
       color: 'white',
       fontSize: 20,
-      width: DEVICEWIDTH * 0.8,
-      height: DEVICEHEIGHT * 0.05,
+      width: config.DEVICEWIDTH * 0.8,
+      height: config.DEVICEHEIGHT * 0.05,
       marginTop: 7,
     },
     BottnR: {
@@ -490,7 +467,7 @@ const styles = StyleSheet.create({
     RowSignupText: {
       flexDirection: 'row',
       textAlign: "right",
-      marginTop: DEVICEHEIGHT * 0.01,
+      marginTop: config.DEVICEHEIGHT * 0.01,
     },
     SignupText: {
       color: '#0000FF',
@@ -499,7 +476,7 @@ const styles = StyleSheet.create({
       justifyContent: "flex-end",
       alignItems: "flex-end",
       textAlign: "right",
-      marginLeft: DEVICEWIDTH * 0.14,
+      marginLeft: config.DEVICEWIDTH * 0.14,
     },
     AlignCheckBox: {
       justifyContent: "flex-start",

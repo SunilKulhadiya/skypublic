@@ -332,159 +332,156 @@ const AttendanceReg = ({ navigation }) => {
     //---------------------------------------------------------
 
     return (
-        <SafeAreaView>
-            <View style={styles.Mcontainer}>
-                <View style={{ padding: 10, alignItems: "center", height: DEVICEHEIGHT * 0.15 }}>
-                    <View style={styles.Row1}>
-                        <View style={styles.Column1}>
-                            <Text style={{ fontSize: 20, fontWeight: "700" }}>Your Class Attendance</Text>
-                            <Text style={{ fontSize: 20, fontWeight: "700" }}>Register is here!</Text>
-                            <Text style={{}}>Dt. : {YDAY}</Text>
-                        </View>
+        <View style={styles.Mcontainer}>
+            <View style={{ padding: 10, alignItems: "center", height: DEVICEHEIGHT * 0.15 }}>
+                <View style={styles.Row1}>
+                    <View style={styles.Column1}>
+                        <Text style={{ fontSize: 20, fontWeight: "700" }}>Your Class Attendance</Text>
+                        <Text style={{ fontSize: 20, fontWeight: "700" }}>Register is here!</Text>
+                        <Text style={{}}>Dt. : {YDAY}</Text>
+                    </View>
+                    <View style={{
+                        width: DEVICEWIDTH * 0.27, flexDirection: "column",
+                        alignItems: "center"
+                    }}>
+                        <Image source={require('../assets/Attendance2Bn.png')}
+                            style={{ width: 120, height: 100, borderRadius: 20, }} />
+                    </View>
+                </View>
+            </View>
+
+            <View style={styles.Row2}>
+                <Text style={{ width: DEVICEWIDTH * 0.13, fontSize: 14, fontWeight: "bold" }}>
+                    Class :</Text>
+                <TouchableOpacity
+                    style={{backgroundColor: "#FFFFFF", width: '28%', height: "100%",
+                    borderRadius: 20, flexDirection: "row",
+                    }} onPress={() => ClassList()}>
+                    <Text
+                        style={{width: DEVICEWIDTH * 0.175, fontSize: 14, fontWeight: "bold",
+                        marginLeft: 10, top: "4%"}}>
+                        {ClassAtt}</Text>
+                    <FontAwesome name={chevrondownClass ? "chevron-down" : "chevron-up"}
+                        size={19} color="black" style={{top: "4%"}} />
+                </TouchableOpacity>
+
+                <Text style={{
+                    width: DEVICEWIDTH * 0.17, fontSize: 14, fontWeight: "bold",
+                    marginLeft: DEVICEWIDTH * 0.07
+                }}>Section :</Text>
+                <TouchableOpacity
+                    style={{backgroundColor: "#FFFFFF", width: '28%', height: "100%",
+                    borderRadius: 20, flexDirection: "row"
+                }} onPress={() => SectionList()}>
+                    <Text style={{width: DEVICEWIDTH * 0.175, fontSize: 14, fontWeight: "bold",
+                                marginLeft: 7, top: "4%"}}>
+                        {SectionAtt}</Text>
+                    <FontAwesome name={chevrondownSection ? "chevron-down" : "chevron-up"}
+                        size={19} color="black" style={{top: "4%"}} />
+                </TouchableOpacity>
+            </View>
+
+                    <View style={styles.CardView2}>
                         <View style={{
-                            width: DEVICEWIDTH * 0.27, flexDirection: "column",
+                            width: DEVICEWIDTH * 0.95, height: DEVICEHEIGHT * 0.05,
+                            backgroundColor: "#BAFAFF", borderTopLeftRadius: 15,
+                            borderTopRightRadius: 15, flexDirection: "row",
                             alignItems: "center"
                         }}>
-                            <Image source={require('../assets/Attendance2Bn.png')}
-                                style={{ width: 120, height: 100, borderRadius: 20, }} />
-                        </View>
-                    </View>
-                </View>
-
-                <View style={styles.Row2}>
-                    <Text style={{ width: DEVICEWIDTH * 0.13, fontSize: 14, fontWeight: "bold" }}>
-                        Class :</Text>
-                    <TouchableOpacity style={{
-                        backgroundColor: "#FFFFFF", width: '28%', height: DEVICEHEIGHT * 0.03,
-                        borderRadius: 20, flexDirection: "row"
-                    }} onPress={() => ClassList()}>
-                        <Text style={{
-                            width: DEVICEWIDTH * 0.175, fontSize: 14, fontWeight: "bold",
-                            marginLeft: 10
-                        }}>{ClassAtt}</Text>
-                        <FontAwesome name={chevrondownClass ? "chevron-down" : "chevron-up"}
-                            size={19} color="black" />
-                    </TouchableOpacity>
-
-                    <Text style={{
-                        width: DEVICEWIDTH * 0.19, fontSize: 14, fontWeight: "bold",
-                        marginLeft: DEVICEWIDTH * 0.07
-                    }}>Section :</Text>
-                    <TouchableOpacity style={{
-                        backgroundColor: "#FFFFFF", width: '28%', height: DEVICEHEIGHT * 0.03,
-                        borderRadius: 20, flexDirection: "row"
-                    }} onPress={() => SectionList()}>
-                        <Text style={{
-                            width: DEVICEWIDTH * 0.175, fontSize: 14, fontWeight: "bold",
-                            marginLeft: 10
-                        }}>{SectionAtt}</Text>
-                        <FontAwesome name={chevrondownSection ? "chevron-down" : "chevron-up"}
-                            size={19} color="black" />
-                    </TouchableOpacity>
-                </View>
-
-                <View>
-                    <View style={styles.SContainer}>
-                        <View style={styles.CardView2}>
-                            <View style={{
-                                width: DEVICEWIDTH * 0.95, height: DEVICEHEIGHT * 0.05,
-                                backgroundColor: "#BAFAFF", borderTopLeftRadius: 15,
-                                borderTopRightRadius: 15, flexDirection: "row",
-                                alignItems: "center"
+                            <Text style={{
+                                color: "#000000", marginLeft: 10, fontWeight: "bold",
+                                width: DEVICEWIDTH * 0.79
                             }}>
-                                <Text style={{
-                                    color: "#000000", marginLeft: 10, fontWeight: "bold",
-                                    width: DEVICEWIDTH * 0.76
-                                }}>
-                                    All Present</Text>
-                                {
-                                    isLoadingFlatList ? (
-                                        <MaterialIcons name={isAllChecked ? "check-box" : "check-box-outline-blank"}
-                                            size={30} color={isAllChecked ? "blue" : "black"}
-                                            onPress={() => UpdateAll()} />
-                                    ) : (
-                                        <View></View>
-                                    )
-                                }
-                            </View>
+                                All Present</Text>
                             {
                                 isLoadingFlatList ? (
-                                    <View>
-                                        <FlatList contentContainerStyle={{ flexGrow: 1 }}
-                                            showsVerticalScrollIndicator={false}
-                                            data={DataS.data}
-                                            keyExtractor={(item, indexx) => indexx.toString()}
-                                            renderItem={({ item, indexx }) => ShowList(item, indexx)}
-                                            extraData={isChecked} style={{ height: DEVICEHEIGHT * 0.6 }}
-                                        />
-                                    </View>
-
+                                    <MaterialIcons name={isAllChecked ? "check-box" : "check-box-outline-blank"}
+                                        size={30} color={isAllChecked ? "blue" : "black"}
+                                        onPress={() => UpdateAll()} />
                                 ) : (
-                                    isLoadingFlatList1 ? (
-                                        <ActivityIndicator />
-                                    ) : (
-                                        <View style={{ marginLeft: 10, marginTop: 10 }}>
-                                            <Text>{message}</Text>
-                                        </View>
-                                    )
+                                    <View></View>
                                 )
                             }
                         </View>
+                        {
+                            isLoadingFlatList ? (
+                                <View>
+                                    <FlatList contentContainerStyle={{ flexGrow: 1 }}
+                                        showsVerticalScrollIndicator={false}
+                                        data={DataS.data}
+                                        keyExtractor={(item, indexx) => indexx.toString()}
+                                        renderItem={({ item, indexx }) => ShowList(item, indexx)}
+                                        extraData={isChecked} style={{ height: DEVICEHEIGHT * 0.6 }}
+                                    />
+                                </View>
 
-                    </View>
-                </View>
-                {
-                    isLoadingFlatList ? (
-                        <TouchableOpacity style={{
-                            width: "95%", height: "5%",
-                            backgroundColor: "#BAFAFF", borderRadius: 8, left: "2%",
-                            position: "absolute", bottom: 57, justifyContent: "center"
-                        }}
-                            onPress={() => SubmitToServer()}>
-                            {
-                                isSaving ? (
-                                    <View>
-                                        <View style={{
-                                            backgroundColor: "#FF9F0B", width: ProgressBar + "%",
-                                            justifyContent: "flex-start", height: "100%", borderRadius: 8
-                                        }}>
-                                        </View>
-                                        <Text style={{ textAlign: "center", color: "#000000", marginTop: "-7%" }}>
-                                            {ProgressBar} %</Text>
-                                    </View>
+                            ) : (
+                                isLoadingFlatList1 ? (
+                                    <ActivityIndicator />
                                 ) : (
-                                    <Text style={{
-                                        color: "#000000", fontWeight: "bold", fontSize: 17,
-                                        textAlign: "center"
-                                    }}>{TextSave}</Text>
+                                    <View style={{ marginLeft: 10, marginTop: 10 }}>
+                                        <Text>{message}</Text>
+                                    </View>
                                 )
-                            }
-                        </TouchableOpacity>
-                    ) : (
-                        <View></View>
-                    )
-                }
-                <FlatList contentContainerStyle={{ flexGrow: 1 }}
-                    showsVerticalScrollIndicator={false}
-                    data={ClassForAtt.data} style={[styles.dropdown, { display: classLView }]}
-                    keyExtractor={(item, indexx) => indexx.toString()}
-                    renderItem={({ item, indexx }) => ShowClassFlatList(item, indexx)}
-                />
-                <FlatList contentContainerStyle={{ flexGrow: 1 }}
-                    showsVerticalScrollIndicator={false}
-                    data={SectionForAtt} style={[styles.dropdownSection, { display: SectionLView }]}
-                    keyExtractor={(item, indexx) => indexx.toString()}
-                    renderItem={({ item, indexx }) => ShowSectionFlatList(item, indexx)}
-                />
+                            )
+                        }
+                    </View>
 
-            </View>
-        </SafeAreaView>
+            <FlatList contentContainerStyle={{ flexGrow: 1 }}
+                showsVerticalScrollIndicator={false}
+                data={ClassForAtt.data} style={[styles.dropdown, {top: "21%",
+                    display: classLView }]}
+                keyExtractor={(item, indexx) => indexx.toString()}
+                renderItem={({ item, indexx }) => ShowClassFlatList(item, indexx)}
+            />
+            <FlatList contentContainerStyle={{ flexGrow: 1 }}
+                showsVerticalScrollIndicator={false}
+                data={SectionForAtt} style={[styles.dropdownSection, {top: "21%",
+                    display: SectionLView }]}
+                keyExtractor={(item, indexx) => indexx.toString()}
+                renderItem={({ item, indexx }) => ShowSectionFlatList(item, indexx)}
+            />
+
+            {
+                isLoadingFlatList ? (
+                    <TouchableOpacity style={{
+                        width: "95%", height: "5%",
+                        backgroundColor: "#BAFAFF", borderRadius: 8, left: "2%",
+                        position: "absolute", bottom: 5, justifyContent: "center"
+                        }}
+                        onPress={() => SubmitToServer()}>
+                        {
+                            isSaving ? (
+                                <View>
+                                    <View style={{
+                                        backgroundColor: "#FF9F0B", width: ProgressBar + "%",
+                                        justifyContent: "flex-start", height: "100%", borderRadius: 8
+                                    }}>
+                                    </View>
+                                    <Text style={{ textAlign: "center", color: "#000000", marginTop: "-7%" }}>
+                                        {ProgressBar} %</Text>
+                                </View>
+                            ) : (
+                                <Text style={{
+                                    color: "#000000", fontWeight: "bold", fontSize: 17,
+                                    textAlign: "center"
+                                }}>{TextSave}</Text>
+                            )
+                        }
+                    </TouchableOpacity>
+                ) : (
+                    <View></View>
+                )
+            }
+
+        </View>
     );
 }
 export default AttendanceReg;
 
 const styles = StyleSheet.create({
     Mcontainer: {
+        flex: 1,
         width: DEVICEWIDTH,
         height: DEVICEHEIGHT,
     },
@@ -493,24 +490,21 @@ const styles = StyleSheet.create({
         left: "2.35%",
     },
     CardView2: {
-        left: "40%",
-        elevation: 5,
-        transform: [{ translateX: -(DEVICEWIDTH * 0.4) },
-        { translateY: -90 }],
+        left: "2.4%",
         backgroundColor: "#FFFFFF",
         borderRadius: 15,
         height: DEVICEHEIGHT * 0.65,
         width: DEVICEWIDTH * 0.95,
-        marginTop: DEVICEHEIGHT * 0.12,
-        marginBottom: -DEVICEHEIGHT * 0.1,
+        marginTop: DEVICEHEIGHT * 0.02,
     },
     Row1: {
         flexDirection: "row",
     },
     Row2: {
         flexDirection: "row",
-        marginLeft: 10,
         height: 33,
+        justifyContent: "center",
+        alignItems: "center",
     },
     Column1: {
         flexDirection: "column",
@@ -532,7 +526,6 @@ const styles = StyleSheet.create({
         shadowOffset: { height: 4, width: 0 },
         shadowOpacity: 0.5,
         elevation: 3,
-        top: "18.5%",
         left: "17%",
     },
     dropdownSection: {
@@ -545,7 +538,6 @@ const styles = StyleSheet.create({
         shadowOffset: { height: 4, width: 0 },
         shadowOpacity: 0.5,
         elevation: 3,
-        top: "18.5%",
         left: "70%",
     },
 

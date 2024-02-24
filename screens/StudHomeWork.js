@@ -232,7 +232,9 @@ const StudHomeWork = ({navigation, route}) => {
                                         <Entypo name="attachment"size={20} color="black"
                                             style={{marginBottom: 10}} />
                                         <TouchableOpacity
-                                            onPress={()=> navigation.navigate("PDFviewer", {fileuri: hw.document})}>
+                                            onPress={()=> navigation.navigate("PDFviewer",
+                                            {fileuri: hw.document,
+                                            title: sub})}>
                                             <AntDesign name="pdffile1" size={35} color="blue" />
                                         </TouchableOpacity>
                                     </View>

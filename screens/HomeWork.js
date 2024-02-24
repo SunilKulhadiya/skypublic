@@ -149,9 +149,9 @@ const HomeWork = ({navigation, route}) => {
     };
     //-----------------------------------------------------Select Class
     const FetchSubjects = async (Cid, Sid) =>{
-        let l;
+        let l, responsSub;
         try{
-            let responsSub = await fetch(config.Url+'getsubjectlist', {
+            responsSub = await fetch(config.Url+'getsubjectlist', {
             method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json',},
             body: JSON.stringify({class_id: Cid, section_id: Sid, session_id: SESSIONID})
             })
@@ -170,16 +170,16 @@ const HomeWork = ({navigation, route}) => {
                 "code": "0",
                 "type": "0"
             }]
-            let responsJsonSub = await responsSub.json();
+            responsSub = await responsSub.json();
             
-            console.log("Subject : ", responsJsonSub);
-            console.log("Subject : ", responsJsonSub.data.length);
-            if(responsJsonSub.data.length > 0){
-                Set_SubForDisp(responsJsonSub.data);
-                for(l=0; l<responsJsonSub.data.length; l++){
-                    console.log("Under for loop, Subject : ", responsJsonSub.data[l]);
-                    ss.push(responsJsonSub.data[l]);
-                    if(l>=responsJsonSub.data.length-1)
+            console.log("Subject --------------------------------------------------------- : ", responsSub);
+            console.log("Subject responsSub.data.length : ", responsSub.data.length);
+            if(responsSub.data.length > 0){
+                Set_SubForDisp(responsSub.data);
+                for(l=0; l<responsSub.data.length; l++){
+                    console.log("Under for loop, Subject : ", responsSub.data[l]);
+                    ss.push(responsSub.data[l]);
+                    if(l>=responsSub.data.length-1)
                         Set_SubForAtt(ss);
                         console.log("Subject ss : ", ss);
                         reset_isShowFlatList(true)
@@ -301,7 +301,7 @@ const HomeWork = ({navigation, route}) => {
         set_SectionLView("none");
         setchevrondownSection(true);
 
-        console.log("Section, Class : ", ClassAtt);
+        console.log("Section, Class : ", ClassAtt, "------------------>>>>>>>>>>>>>>>>> SectionID : ", idd);
         console.log("Section, section : ", SectionTitle);
 
         if(ClassAtt !== 'Select' && SectionTitle !== "All"){
@@ -318,8 +318,8 @@ const HomeWork = ({navigation, route}) => {
                 <TouchableOpacity onPress={() => SelectSection(Itmsection.id, Itmsection.section)} key={Itmsection.id}>
                     <Text style={{width: DEVICEWIDTH * 0.2, color: "#000000", fontSize: 17, marginBottom: 6}}>
                             {Itmsection.section}. </Text>
-                    <View style={{backgroundColor: "#C0C0C0", width: "100%", height: 1}}></View>                        
                 </TouchableOpacity>
+                <View style={{backgroundColor: "#C0C0C0", width: "100%", height: 1}}></View>                        
             </View>
         );
     }
@@ -337,7 +337,7 @@ const HomeWork = ({navigation, route}) => {
         }else{
             set_SubLView("none");
         }
-        console.log("Sub List : ", chevrondownSub);
+        //console.log("Sub List : ", chevrondownSub);
     }
 
     const SubjectSelect = async (idd, SubjectTitle) => {
@@ -348,7 +348,6 @@ const HomeWork = ({navigation, route}) => {
     }
 
     const ShowSubjectFlatList = (ItmSub, Index) => {
-        console.log("ShowSubjectFlatList, ItmSub : ", ItmSub);
         return(
                 <View style={{backgroundColor: "#FFFFFF", justifyContent: "center", alignItems: "center",
                             height: DEVICEHEIGHT * 0.05, width: "100%"}}>
@@ -607,7 +606,8 @@ const HomeWork = ({navigation, route}) => {
                                             style={{marginBottom: 10}} />
                                         <TouchableOpacity
                                             onPress={()=> navigation.navigate("PDFviewer",
-                                                            {fileuri: hw.document})}>
+                                                            {fileuri: hw.document,
+                                                            title: sub})}>
                                             <AntDesign name="pdffile1" size={35} color="blue" />
                                         </TouchableOpacity>
                                     </View>
@@ -624,13 +624,13 @@ const HomeWork = ({navigation, route}) => {
     }
     //----------------
     const ShowList = (Itm, Index) => {
-        if(Itm.subject_id != "-1" && HomeWorks.length > 0){
+        if(Itm.subject_id != "-1"){
         // let n = 0, InitialIndex = 0;
         // for(n = 0; n<HomeWorks.length; n++){
         //     if(Itm.subject_id == HomeWorks[n].subject_id)
         //         InitialIndex = InitialIndex + 1;
         // }
-        console.log("InitialIndex : ", InitialIndex);
+        //console.log("InitialIndex : ", InitialIndex);
         if(SelectedSubject == "All Subject" || Itm.subject_id == SubID || SubID == "0")
             return(
                 <View style={styles.SContainer}>
@@ -655,7 +655,7 @@ const HomeWork = ({navigation, route}) => {
                             route.params.PERMISSION_RANGE == 11 ||
                             route.params.PERMISSION_RANGE == 21 ||
                             route.params.PERMISSION_RANGE == 30 ? (
-                                <TouchableOpacity onPress={() => ClickHandler(Itm, HomeWorks[0].section_id,
+                                <TouchableOpacity onPress={() => ClickHandler(Itm, SectionID,
                                         Itm.subject_group_id)}>
                                     <MaterialIcons name="note-add" size={40} color="#05AE7D"
                                         style={{left: "82%"}}/>

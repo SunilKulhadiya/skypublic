@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, Modal, FlatList, ActivityIndicator, Image, 
-        TouchableOpacity, TextInput, Alert } from 'react-native';
+        TouchableOpacity, TextInput, Alert, Pressable } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';   
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import {MaterialIcons, AntDesign,} from '@expo/vector-icons';
@@ -54,7 +54,6 @@ export default function GallerySky({navigation, route}) {
                             respons1.data[j].title == "slides" || respons1.data[j].title == "Slids"){
                                 Slides.push(respons1.data[j]);
                                 set_SlideImgPath(respons1.data[j].path);
-                                set_isCarousel(true);
                                 console.log("------------------Path : ", respons1.data[j].path);
                         }else{
                             Gallry.push(respons1.data[j]);
@@ -62,9 +61,13 @@ export default function GallerySky({navigation, route}) {
                         }
                     //}
                     if(j>=respons1.data.length - 1){
-                        set_SlideData(Gallry);
                         set_GalleyData(Gallry);
                         console.log("Data : ", Gallry);
+                        if(Slides.length > 0){
+                            set_SlideData(Slides);
+                            setTimeout(()=>
+                            set_isCarousel(true), 300);
+                        }
                     }
                 }                
                     reset_isLoading(false);
@@ -78,6 +81,29 @@ export default function GallerySky({navigation, route}) {
         FetchData();
     },[]);
     //----------------------------------------
+    const DelGallery = async (Id) => {
+        try{
+
+            let respons1 = await fetch(config.Url+'deletegallery', {
+                method: 'POST', headers: {'Accept': 'application/json', 'Content-Type': 'application/json',},
+                body: JSON.stringify({"id": Id})
+            })
+
+            respons1 = await respons1.json();
+            console.log("-----------------------------------------------------------GallerySky.js, Delete Gallery : ", respons1);
+                reset_isLoading(false);
+            if(respons1.code == 0 || respons1.code == "0"){
+                Alert.alert(respons1.msg);
+                FetchData();
+            }else{
+                Alert.alert("Some thing went wrong, try after some time.");
+            }
+        }catch(err){
+            console.error("Error-1 : ",err);
+        }
+
+    }
+    //----------------------------------------
     const ShowList = (Itm, Indx) => {
         //setImgUrl(Itm.images);
         //console.log("source : ", ImgUrl.length);
@@ -86,9 +112,17 @@ export default function GallerySky({navigation, route}) {
             <View style={styles.CardView2}>
                 <View style={{width: config.DEVICEWIDTH * 0.95, height: config.DEVICEHEIGHT * 0.05,
                     backgroundColor: "#BAFAFF", borderTopLeftRadius: 15,
-                    borderTopRightRadius: 15, justifyContent: "center"}}>
+                    borderTopRightRadius: 15, justifyContent: "center", flexDirection: 'row'}}>
                     <Text style={{color: "#000000", marginLeft: 10, fontWeight: "bold",
-                        width: config.DEVICEWIDTH * 0.6}}>{Itm.title}</Text>
+                        width: config.DEVICEWIDTH * 0.8, marginTop: 9}}>{Itm.title}</Text>
+                    {
+                        route.params.PERMISSION_RANGE == 12 ||
+                        route.params.PERMISSION_RANGE == 30 ? (
+                            <MaterialIcons name="delete" size={24} color="#F90E2D"
+                                style={{width: config.DEVICEWIDTH * 0.12, marginTop: 9}}
+                                onPress={()=> DelGallery(Itm.id)} />
+                        ):(<></>)
+                    }
                 </View>
                 <View style={{marginTop: 10}}></View>
                 <FlatList contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}
@@ -99,7 +133,7 @@ export default function GallerySky({navigation, route}) {
                 />
                 <View style={{marginTop: 10}}></View>
             </View>
-            <View style={{marginTop: Indx >= GalleyData.length -1 ? config.DEVICEHEIGHT * 0.1 : 0}}/>
+            <View style={{marginTop: Indx >= GalleyData.length -1 ? config.DEVICEHEIGHT * 0.8 : 0}}/>
         </View>
         );
     }
@@ -139,7 +173,7 @@ export default function GallerySky({navigation, route}) {
     }
     //--------------------------------------
     const mySlider = ({item}) => {
-        //console.log("mySlider : ", item, ", path : ", SlideImgPath);
+        console.log("mySlider : ", item, ", path : ", SlideImgPath+"/"+item);
 
         return (
         <View style={styles.SliderContainer}>
@@ -304,18 +338,20 @@ export default function GallerySky({navigation, route}) {
                         </View>
                             ):(<></>)
                         }
+                        <View style={{width: "100%", height: isCarousel ? "60%" : "80%"}}>
                         <FlatList contentContainerStyle={{ flexGrow: 1 }}
                             showsVerticalScrollIndicator={false}
                             data={GalleyData}
                             keyExtractor={(item, index) => index.toString()}
                             renderItem={({item, index}) => ShowList(item, index)}
                         />
+                        </View>
                         {
                             route.params.PERMISSION_RANGE == 11 ||
-                            route.params.PERMISSION_RANGE == 21 ||
+                            route.params.PERMISSION_RANGE == 12 ||
                             route.params.PERMISSION_RANGE == 30 ? (
                                 <View style={[styles.touchableOpacityStyle,
-                                    {bottom: isCarousel ? "46%":"8%"}]}>
+                                    {bottom: 0,}]}>
                                     <MaterialIcons name="add-a-photo" size={35} color="blue"
                                         style={styles.floatingB}
                                         onPress={(()=> FiletoggleModalVisibility())}/>
@@ -339,7 +375,7 @@ export default function GallerySky({navigation, route}) {
                                         Create New Gallery</Text>
                                     <AntDesign name="close" size={28} color="red"
                                         onPress={() => FiletoggleModalVisibility()}
-                                        style={styles.floatingB}/>
+                                        style={styles.ModalClose}/>
                                 </View>
                                 <View style={{height: "54%", borderColor: "#BCAF98", borderRadius: 10,
                                         borderWidth: 3, marginTop: 20,}}>
@@ -409,9 +445,11 @@ export default function GallerySky({navigation, route}) {
                                 <Text style={{color: "#FFFFFF", fontSize: 20,
                                         width: config.DEVICEWIDTH * 0.88, fontWeight: "700"}}>
                                     {ImgZoomTitle}</Text>
-                                <AntDesign name="close" size={27} color="red"
-                                    onPress={() => ImgModalVisibilityClose()}
+                                <TouchableOpacity style={{width: 50, height: 50}}
+                                    onPress={() => ImgModalVisibilityClose()}>
+                                <AntDesign name="close" size={24} color="red"
                                     style={styles.floatingB}/>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>
@@ -448,7 +486,7 @@ const styles = StyleSheet.create({
     SliderContainer: {
         alignContent: 'center',
         width: config.DEVICEWIDTH * 0.8,
-        height: config.DEVICEWIDTH * 0.6,
+        height: config.DEVICEWIDTH * 0.55,
         borderRadius: 8,
         backgroundColor: "#444444",
     },
@@ -457,7 +495,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 8,
         width: config.DEVICEWIDTH * 0.8,
-        height: config.DEVICEWIDTH * 0.6,
+        height: config.DEVICEWIDTH * 0.55,
     },
     touchableOpacityStyle: {
         position: 'absolute',
@@ -475,6 +513,14 @@ const styles = StyleSheet.create({
         left: "1.5%",
     },
     floatingB: {
+        position: 'absolute',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.6,
+        shadowRadius: 40,
+        elevation: 15,
+    },
+    ModalClose: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.6,

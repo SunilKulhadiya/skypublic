@@ -503,18 +503,20 @@ export default function FeesReceive({navigation, route}) {
         for(j = 0; j<responseSFM.data.length; j++){
             paidFees=0;
             tf = tf + parseInt(responseSFM.data[j].fees[0].amount);
-            console.log("FetchStudentFeesIDs, responseSFM.data[j].fees[0].amount : ", responseSFM.data[j].fees[0].amount);
+            console.log("---------------------------------FetchStudentFeesIDs, responseSFM.data[j] : ", responseSFM.data[j]);
             const JSONString = responseSFM.data[j].fees[0].amount_detail;
             object = JSON.parse(JSONString);
             array = Object.keys(object).map(function(k) {
                 return object[k];
             });
-                for(k=0; k<array.length; k++){
-                    paidFees = parseInt(paidFees) + parseInt(array[k].amount);
-                    if(k>= array.length - 1){
-                        Set_GTPaid(paidFees);
-                    }
-                }
+                // for(k=0; k<array.length; k++){
+                //     paidFees = paidFees + parseInt(array[k].amount) + parseInt(array[k].amount_discount)
+                //                 -  parseInt(array[k].amount_fine);
+
+                //     if(k>= array.length - 1){
+                //         Set_GTPaid(paidFees);
+                //     }
+                // }
 
             if(j => responseSFM.data.length-1)
                 Set_TotalFees(tf);
@@ -711,7 +713,7 @@ export default function FeesReceive({navigation, route}) {
                             marginLeft: 7, textAlign: 'right'}}>
                         {item.amount} </Text>
                 </View>
-                <View style={{width: "100%", alignItems: 'center'}}>
+                <View style={{width: "100%", alignItems: 'flex-start'}}>
                 {
                     item.Expend == "1" || item.Expend == 1 ? (
                         <View style={{backgroundColor: "#C0C0C0", width: "97%",
@@ -787,8 +789,9 @@ export default function FeesReceive({navigation, route}) {
         );
     }
     //--------------------------------------
-    const PostToScreen1 = (item, inx) => {
+    const PostToScreen1 = (item, inx, paidfees) => {
         console.log("PostToScreen1, item : ", item);
+        Set_GTPaid(paidfees);
         set_Screen1Index(inx);
         Set_SFMID(item.fees[0].id);
         Set_FeeType_ID(item.fees[0].fee_groups_feetype_id);
@@ -826,13 +829,15 @@ export default function FeesReceive({navigation, route}) {
         array = Object.keys(object).map(function(k) {
             return object[k];
         });
+        console.log(">>>>>>>>>>>>>>>>>> array : ", array);
             for(j=0; j<array.length; j++){
-                paidFees = paidFees + parseInt(array[j].amount);
+                paidFees = paidFees + parseInt(array[j].amount) + parseInt(array[j].amount_discount)
+                            -  parseInt(array[j].amount_fine);
             }
         return(
             <View>
                 <TouchableOpacity 
-                    onPress={() => { PostToScreen1(item, Indx)}} key={item.id}
+                    onPress={() => { PostToScreen1(item, Indx, paidFees)}} key={item.id}
                     style={{alignItems: "center", marginLeft: 3,
                     height: DEVICEHEIGHT * 0.064, width: "98%", flexDirection: 'row'}}>
                         <Text style={{width: "33%", color: "blue", fontSize: 14, marginBottom: 7,
@@ -1248,7 +1253,7 @@ export default function FeesReceive({navigation, route}) {
                                                 marginLeft: 47}}>
                                             Paid</Text>
                                     </View>
-                                    <View style={{height: "84%"}}>
+                                    <View style={{height: "75%"}}>
                                         <FlatList contentContainerStyle={{ flexGrow: 1 }} 
                                             showsVerticalScrollIndicator={false}
                                             data={FeesDetail}
@@ -1257,12 +1262,12 @@ export default function FeesReceive({navigation, route}) {
                                             extraData = {isLoadingFlatList}
                                         />
                                     </View>
-                                    <View style={{flexDirection: 'row', left: "36%", marginTop: "-11%"}}>
+                                    <View style={{flexDirection: 'row', left: "37%", marginTop: "3%"}}>
                                         <Text style={{fontSize: 17, fontWeight: '700', width: "30%",
                                                 color: "#000000"}}>
                                             Total Paid :</Text>
                                         <Text style={{fontSize: 17, fontWeight: '700', width: "30%"}}>
-                                            {TPaid}</Text>
+                                            {GTPaid}</Text>
                                     </View>
                                 </View>
                             ):(
@@ -1358,7 +1363,7 @@ export default function FeesReceive({navigation, route}) {
 
                 </View>
             </View>
-        <View style={{alignItems: 'center', justifyContent: 'center', top: "0%"}}>
+        <View style={{alignItems: 'center', justifyContent: 'center',}}>
         {
             ScreenNo == 2 ? (
                 <View style={{width: DEVICEWIDTH * 0.95, height: DEVICEHEIGHT * 0.05,
@@ -1379,11 +1384,11 @@ export default function FeesReceive({navigation, route}) {
                     }
                 </View>
             ):(
-                ScreenNo == 1 && (TotalFees - TPaid) > 0 ?(
+                ScreenNo == 1 && (TotalFees - GTPaid) > 0 ?(
                     route.params.PERMISSION_RANGE == 11 ||
                     route.params.PERMISSION_RANGE == 30 ? (
                         <Entypo name="add-to-list" size={35} color="green"
-                            onPress={()=> PostToScreen2()} style={{marginTop: "-60%"}}/>
+                            onPress={()=> PostToScreen2()} style={{marginTop: "-50%"}}/>
                     ):(
                         <></>
                     )

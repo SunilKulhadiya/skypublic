@@ -88,119 +88,119 @@ export default function Attendance() {
 
   return (
     <SafeAreaView>
-    <View style={styles.Mcontainer}>
-                <View style={{padding: 10, alignItems: "center", height: DEVICEHEIGHT * 0.15}}>
-                    <View style={styles.Row1}>
-                        <View style={styles.Column1}>
-                            <Text style={{fontSize: 20, fontWeight: "700"}}>Your Class Attendance</Text>
-                            <Text style={{fontSize: 20, fontWeight: "700"}}>is here!</Text>
-                        </View>
-                            <View style={{width: DEVICEWIDTH * 0.27, flexDirection: "column", alignItems: "center"}}>
-                                <Image source={require('../assets/Teaching1Bn.png')} style={{width: 120, height: 100, 
-                                    borderRadius: 20,}}/>
+        <View style={styles.Mcontainer}>
+        <View style={{padding: 10, alignItems: "center", height: DEVICEHEIGHT * 0.15}}>
+            <View style={styles.Row1}>
+                <View style={styles.Column1}>
+                    <Text style={{fontSize: 20, fontWeight: "700"}}>Your Class Attendance</Text>
+                    <Text style={{fontSize: 20, fontWeight: "700"}}>is here!</Text>
+                </View>
+                    <View style={{width: DEVICEWIDTH * 0.27, flexDirection: "column", alignItems: "center"}}>
+                        <Image source={require('../assets/Teaching1Bn.png')} style={{width: 120, height: 100, 
+                            borderRadius: 20,}}/>
+                    </View>
+                </View>
+            </View>
+
+        <View>
+        {
+            isLoading ? (
+                <ActivityIndicator/>
+            ):(
+                <View style={styles.Mcontainer}>
+                {/*
+                    <SelectDropdown data={ClassForAtt} onSelect={(selectedClas, index)=>{
+                        console.log(selectedClas, index)
+                        set_ClassAtt(selectedClas)
+                        }  } 
+                        defaultButtonText={"Select Class"}
+                        buttonTextAfterSelection={(selectedClas, index)=>{
+                            //FetchMonthYearwise();
+                            return selectedClas;  }
+                        }
+                        rowTextForSelection={(item, index)=>{ return item; }}
+                        renderDropdownIcon={isOpened =>{
+                            return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'}
+                                                color={'#000000'} size={18} style={styles.DropDIcon}/>;
+                        }}
+                        buttonStyle={styles.dropdownBtnStyle}
+                        buttonTextStyle={styles.dropdownBtnTextStyle}
+                    />
+                    */}
+                    
+                    <View style={styles.Row2}>
+                        <Text style={{fontSize: 16, marginLeft: 17}}>Month : </Text>
+                        <SelectDropdown data={AttMonth} onSelect={(selectedMnth, index)=>{
+                            console.log(selectedMnth, index)
+                            set_Month(selectedMnth)
+                            }  } 
+                            defaultButtonText={SelectMonth}
+                            buttonTextAfterSelection={(selectedMnth, index)=>{
+                                if(SelectMonth !== SelectMonth1){
+                                    set_Month1(SelectMonth);
+                                    reset_isLoadingFlatList(false);
+                                    FetchPersonal();
+                                }
+                                return selectedMnth;  
+                            }
+                            }
+                            rowTextForSelection={(item, index)=>{ return item; }}
+                            renderDropdownIcon={isOpened =>{
+                                return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'}
+                                                    color={'#000000'} size={18} style={styles.DropDIcon}/>;
+                            }}
+                            buttonStyle={styles.dropdownBtnStyleMonth}
+                            buttonTextStyle={styles.dropdownBtnTextStyle}
+                        />
+
+                        <Text style={{fontSize: 16, marginLeft: 30}}>Year : </Text>
+                        <SelectDropdown data={AttYears} onSelect={(selectedYear, index)=>{
+                            console.log(selectedYear, index)
+                            set_Year(selectedYear)
+                            }  }
+                            defaultButtonText={SelectYear}
+                            buttonTextAfterSelection={(selectedYear, index)=>{
+                                if(SelectYear !== SelectYear1){
+                                    set_Year1(SelectYear);
+                                    reset_isLoadingFlatList(false);
+                                    FetchPersonal();
+                                }
+                                return selectedYear;  
+                            }
+                            }
+                            rowTextForSelection={(item, index)=>{ return item; }}
+                            renderDropdownIcon={isOpened =>{
+                                return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'}
+                                                    color={'#000000'} size={18} style={styles.DropDIcon}/>;
+                            }}
+                            buttonStyle={styles.dropdownBtnStyleYear}
+                            buttonTextStyle={styles.dropdownBtnTextStyle}
+                        />
+                    </View>
+                    <View style={styles.SContainer}>
+                        <View style={styles.CardView2}>
+                            <View style={{width: DEVICEWIDTH * 0.95, height: DEVICEHEIGHT * 0.05, 
+                                        backgroundColor: "#BAFAFF", borderTopLeftRadius: 15, 
+                                        borderTopRightRadius: 15, justifyContent: "center"}}>
+                                <Text style={{color: "#000000", marginLeft: 10, fontWeight: "bold"}}>Register</Text>
                             </View>
+                            {
+                                isLoadingFlatList ? (
+                            <FlatList contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}
+                                data={FetchData.data}
+                                keyExtractor={(item, indexx) => indexx.toString()}
+                                renderItem={({item, indexx}) => ShowList(item, indexx)}
+                            />
+                                ):(
+                                    <ActivityIndicator/>
+                                )
+                            }
                         </View>
                     </View>
-
-                <View>
-                {
-                    isLoading ? (
-                        <ActivityIndicator/>
-                    ):(
-                        <View style={styles.Mcontainer}>
-                        {/*
-                            <SelectDropdown data={ClassForAtt} onSelect={(selectedClas, index)=>{
-                                console.log(selectedClas, index)
-                                set_ClassAtt(selectedClas)
-                                }  } 
-                                defaultButtonText={"Select Class"}
-                                buttonTextAfterSelection={(selectedClas, index)=>{
-                                    //FetchMonthYearwise();
-                                    return selectedClas;  }
-                                }
-                                rowTextForSelection={(item, index)=>{ return item; }}
-                                renderDropdownIcon={isOpened =>{
-                                    return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'}
-                                                        color={'#000000'} size={18} style={styles.DropDIcon}/>;
-                                }}
-                                buttonStyle={styles.dropdownBtnStyle}
-                                buttonTextStyle={styles.dropdownBtnTextStyle}
-                            />
-                            */}
-                            
-                            <View style={styles.Row2}>
-                                <Text style={{fontSize: 16, marginLeft: 17}}>Month : </Text>
-                                <SelectDropdown data={AttMonth} onSelect={(selectedMnth, index)=>{
-                                    console.log(selectedMnth, index)
-                                    set_Month(selectedMnth)
-                                    }  } 
-                                    defaultButtonText={SelectMonth}
-                                    buttonTextAfterSelection={(selectedMnth, index)=>{
-                                        if(SelectMonth !== SelectMonth1){
-                                            set_Month1(SelectMonth);
-                                            reset_isLoadingFlatList(false);
-                                            FetchPersonal();
-                                        }
-                                        return selectedMnth;  
-                                    }
-                                    }
-                                    rowTextForSelection={(item, index)=>{ return item; }}
-                                    renderDropdownIcon={isOpened =>{
-                                        return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'}
-                                                            color={'#000000'} size={18} style={styles.DropDIcon}/>;
-                                    }}
-                                    buttonStyle={styles.dropdownBtnStyleMonth}
-                                    buttonTextStyle={styles.dropdownBtnTextStyle}
-                                />
-
-                                <Text style={{fontSize: 16, marginLeft: 30}}>Year : </Text>
-                                <SelectDropdown data={AttYears} onSelect={(selectedYear, index)=>{
-                                    console.log(selectedYear, index)
-                                    set_Year(selectedYear)
-                                    }  }
-                                    defaultButtonText={SelectYear}
-                                    buttonTextAfterSelection={(selectedYear, index)=>{
-                                        if(SelectYear !== SelectYear1){
-                                            set_Year1(SelectYear);
-                                            reset_isLoadingFlatList(false);
-                                            FetchPersonal();
-                                        }
-                                        return selectedYear;  
-                                    }
-                                    }
-                                    rowTextForSelection={(item, index)=>{ return item; }}
-                                    renderDropdownIcon={isOpened =>{
-                                        return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'}
-                                                            color={'#000000'} size={18} style={styles.DropDIcon}/>;
-                                    }}
-                                    buttonStyle={styles.dropdownBtnStyleYear}
-                                    buttonTextStyle={styles.dropdownBtnTextStyle}
-                                />
-                            </View>
-                            <View style={styles.SContainer}>
-                                <View style={styles.CardView2}>
-                                    <View style={{width: DEVICEWIDTH * 0.95, height: DEVICEHEIGHT * 0.05, 
-                                                backgroundColor: "#BAFAFF", borderTopLeftRadius: 15, 
-                                                borderTopRightRadius: 15, justifyContent: "center"}}>
-                                        <Text style={{color: "#000000", marginLeft: 10, fontWeight: "bold"}}>Register</Text>
-                                    </View>
-                                    {
-                                        isLoadingFlatList ? (
-                                    <FlatList contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}
-                                        data={FetchData.data}
-                                        keyExtractor={(item, indexx) => indexx.toString()}
-                                        renderItem={({item, indexx}) => ShowList(item, indexx)}
-                                    />
-                                        ):(
-                                            <ActivityIndicator/>
-                                        )
-                                    }
-                                </View>
-                            </View>
-                            </View>
-                              )                    
-                }
-                </View>
+                    </View>
+                        )                    
+        }
+        </View>
     </View>
     </SafeAreaView>
   );

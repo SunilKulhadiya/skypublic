@@ -2,9 +2,9 @@
   "expo": {
     "name": "skypublicschool",
     "slug": "skypublicschool",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/SkyLogo512x512.png",
+    "icon": "./assets/SkyLogo512_2.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/skyLogo.png",
@@ -17,14 +17,15 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 2,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/SkyLogo512x512.png",
+        "foregroundImage": "./assets/SkyLogo512_2.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.skandsolution.skypublicschool"
     },
     "web": {
-      "favicon": "./assets/SkyLogo512x512.png"
+      "favicon": "./assets/SkyLogo512_2.png"
     },
     "extra": {
       "eas": {
